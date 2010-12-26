@@ -64,7 +64,17 @@ class wproFilesystem extends wproFilesystemBase {
 	
 	// creates a directory
 	function makeDir($dir, $chmod=0) {
-		if (!file_exists ($dir)) {
+		
+		$o_ftp = new wproFtpinterface();
+		
+		$dir = $o_ftp->ftpPathFromServerPath($dir);
+		
+		$b_success = (ftp_mkdir($o_ftp->r_connection,$dir) ? true : false);
+		
+		unset($o_ftp);
+		return $b_success;
+	
+/*		if (!file_exists ($dir)) {
 			if (@mkdir ($dir)) {
 				if (!empty($chmod)) {
 					//@chmod($dir, octdec($chmod));
@@ -89,6 +99,7 @@ class wproFilesystem extends wproFilesystemBase {
 		} else {
 			return false;
 		}
+*/
 	}
 	
 	// copy a file or directory
@@ -126,7 +137,19 @@ class wproFilesystem extends wproFilesystemBase {
 	}
 
 	function rename ($oldname, $newname) {
-		return @rename($oldname, $newname);
+		
+		$o_ftp = new wproFtpinterface();
+		
+		$oldname = $o_ftp->ftpPathFromServerPath($oldname);
+		$newname = $o_ftp->ftpPathFromServerPath($newname);
+		
+		$b_success = (ftp_rename($o_ftp->r_connection,$oldname,$newname) ? true : false);
+		
+		unset($o_ftp);
+		return $b_success;
+		
+/*		return @rename($oldname, $newname);
+*/
 	}
 	
 	// appends data to a file

@@ -23,7 +23,39 @@ if (WPRO_SESSION_ENGINE=='PHP'&&!isset($_SESSION)) {
 	
 	*/
 	
-	session_start();
+	@include "../../admin/common.inc.php";
+	//session_start();
+	
+	class wproFtpinterface {
+		
+		function __construct () {
+			
+			global $a_configSite,$s_pathToRoot;
+
+			// connect to FTP server and login
+			$this->r_connection = ftp_connect((strlen($a_configSite["ftp_host"]) ? $a_configSite["ftp_host"] : "localhost"));
+			$b_ftpLoggedIn = ftp_login($this->r_connection,$a_configSite["ftp_user"],$a_configSite["ftp_password"]);
+
+			// change to ftp_path on FTP server
+			ftp_chdir($this->r_connection,$a_configSite["ftp_path"]);
+
+			// build filesystem path to ftp_path
+			$this->s_ftpPath = $s_pathToRoot . "data/" . $a_configSite["upload_folder"] . "/";
+		}
+		
+		function __destruct () {
+			ftp_close($this->r_connection);
+		}
+		
+		public function ftpPathFromServerPath ($s_path) {
+			
+			if (substr($s_path,0,strlen($this->s_ftpPath)) == $this->s_ftpPath) {
+				return substr($s_path,strlen($this->s_ftpPath));
+			} else {
+				return false;
+			}
+		}
+	}
 	
 }
 ?>

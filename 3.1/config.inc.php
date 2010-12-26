@@ -21,7 +21,7 @@ if (defined('WPRO_EDITOR_URL')) return;
 * If you're not sure set it anyway :-)
 */
 
-define('WPRO_EDITOR_URL', '');
+define('WPRO_EDITOR_URL', $a_configSite["site_url"] . '/tools/wysiwyg3.1/');
 
 
 /* No need to change anything below here! :-) 

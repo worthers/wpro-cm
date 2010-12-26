@@ -86,13 +86,26 @@ if (!defined('IN_WPROFILESYSTEM')) exit;
 						}
 						
 						// try to move file to final destination...
-						if (!@move_uploaded_file($_FILES[$field]['tmp_name'][$i], $folder.$name)) {
+						if (!@move_uploaded_file($_FILES[$field]['tmp_name'][$i], $GLOBALS["s_pathToTemp"].$name)) {
 							// failed to move file
 							$errors['fatal'][$_FILES[$field]['name'][$i]] = 'unknown';
 							@unlink($_FILES[$field]['tmp_name'][$i]);
 							if ($stopOnError) return $errors;
 							
 						} else {
+							
+							// upload via ftp
+							$o_ftp = new wproFtpinterface();
+							$wproFtpinterface_remoteFile = $o_ftp->ftpPathFromServerPath($folder.$name);
+							if(!ftp_put($o_ftp->r_connection,$wproFtpinterface_remoteFile,$GLOBALS["s_pathToTemp"].$name,FTP_BINARY)) {
+								// failed to upload file
+								$errors['fatal'][$_FILES[$field]['name'][$i]] = 'unknown';
+								@unlink($GLOBALS["s_pathToTemp"].$name);
+								if ($stopOnError) return $errors;
+							} else {
+								@unlink($GLOBALS["s_pathToTemp"].$name);
+							}
+							
 							// if image check size...
 							if ($chkimgwidth) {
 								if (in_array($extension, $GDExtensions)) {
@@ -100,7 +113,13 @@ if (!defined('IN_WPROFILESYSTEM')) exit;
 									if ($width > $maxwidth || $height > $maxheight) {
 										// image too large
 										// if GD library is installed re-size image to maximum acceptable size...
-										if ($resizedTo = @$imageEditor->proportionalResize ($folder.$name, $folder.$name, $maxwidth, $maxheight)) {
+										if ($resizedTo = @$imageEditor->proportionalResize ($folder.$name, $GLOBALS["s_pathToTemp"].$name, $maxwidth, $maxheight)) {										
+										//if ($resizedTo = @$imageEditor->proportionalResize ($folder.$name, $folder.$name, $maxwidth, $maxheight)) {
+											// re-upload from $s_pathToTemp via ftp
+											$wproFtpinterface_remoteFile = $o_ftp->ftpPathFromServerPath($folder.$name);
+											ftp_put($o_ftp->r_connection,$wproFtpinterface_remoteFile,$GLOBALS["s_pathToTemp"].$name,FTP_BINARY);
+											@unlink($GLOBALS["s_pathToTemp"].$name);
+											// end ftp re-upload
 											$errors['resized'][$_FILES[$field]['name'][$i]] = $resizedTo;
 											$name = basename($resizedTo[2]);
 											if (isset($errors['overwrite'][$_FILES[$field]['name'][$i]])) {

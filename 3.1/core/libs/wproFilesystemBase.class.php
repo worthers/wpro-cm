@@ -205,7 +205,10 @@ class wproFilesystemBase extends wproCore {
 				return false;
 			}
 		} elseif ((file_exists ($file)) && (is_file($file))) {
-			if (@unlink($file)) {
+			$o_ftp = new wproFtpinterface();
+			$file = $o_ftp->ftpPathFromServerPath($file);
+			if (ftp_delete($o_ftp->r_connection,$file)) {
+			//if (@unlink($file)) {
 				return true;
 			} else {
 				return false;

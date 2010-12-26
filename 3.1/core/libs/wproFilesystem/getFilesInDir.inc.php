@@ -14,7 +14,10 @@ if (!defined('IN_WPROFILESYSTEM')) exit;
 				if (strstr($file, '_WPROTEMP_')) {
 					// cleanup temp files over 48 hours old.
 					if (filemtime($directory.$file) < time()-172800) {
-						unlink($directory.$file);
+						$o_ftp = new wproFtpinterface();
+						$s_fileToDelete = $o_ftp->ftpPathFromServerPath($directory.$file);
+						ftp_delete($o_ftp->r_connection,$s_fileToDelete);
+						//unlink($directory.$file);
 					}
 					continue;
 				}				
