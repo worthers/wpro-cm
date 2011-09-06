@@ -269,7 +269,7 @@ class wproFilesystem extends wproFilesystemBase {
 		return false;
 	}
 	
-	function getFoldersInDir ($directory, $sortby='name', $sortdir='asc', $filters=array() ) {
+	function getFoldersInDir ($directory, $sortby='name', $sortdir='asc', $filters=array(), $defaultFilters=true ) {
 		return include(dirname(__FILE__).'/wproFilesystem/getFoldersInDir.inc.php');
 	}
 	

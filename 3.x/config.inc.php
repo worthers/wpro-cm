@@ -2,8 +2,8 @@
 if (!defined('IN_WPRO')) exit();
 if (defined('WPRO_EDITOR_URL')) return;
 /* 
-* WysiwygPro 3.1.0, 23 July 2008.
-* (c) Copyright 2007 Chris Bolt and ViziMetrics Inc.
+* WysiwygPro 3.2.1, 30 November 2009.
+* (c) Copyright 2007 and forever thereafter Chris Bolt and ViziMetrics Inc.
 */
 
 /*
@@ -139,8 +139,8 @@ define('WPRO_AJAX_METHOD', 'POST');
 
 /* language vars, these cannot be changed at run time */
 /* these security related messages occur when session data is not available and the language is unknown */
-define('WPRO_STR_SESSION_TIMEOUT', '<strong>Your editing session has expired.</strong> <br />This is usually caused by a long period of inactivity. Please re-load the page.');
-define('WPRO_STR_JS_SESSION_TIMEOUT', 'Your editing session has expired. This is usually caused by a long period of inactivity. Please re-load the page.');
+define('WPRO_STR_SESSION_TIMEOUT', '<strong>Your editing session has expired.</strong> <br />This is usually caused by a long period of inactivity. Please save your document and re-load the page.');
+define('WPRO_STR_JS_SESSION_TIMEOUT', 'Your editing session has expired. This is usually caused by a long period of inactivity. Please save your document and re-load the page.');
 define('WPRO_STR_UNAUTHORIZED', 'You are not authorized to access this resource.');
 define('WPRO_STR_JS_UNAUTHORIZED', 'You are not authorized to access this resource.');
 

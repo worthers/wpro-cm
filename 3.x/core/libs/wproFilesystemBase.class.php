@@ -13,8 +13,10 @@ class wproFilesystemBase extends wproCore {
 	
 	// if the below are set then files and folders containing anything other than these characters are considered invalid.
 	// the following must either be an empty value or a valid regular expression
-	var $acceptedFolderChars = "#[^A-Za-z0-9_\-./\\ ]#i";
-	var $acceptedFileChars = "#[^A-Za-z0-9_\-. ]#i";
+	//var $acceptedFolderChars = "#[^A-Za-z0-9_\-./\\ ]#i";
+	//var $acceptedFileChars = "#[^A-Za-z0-9_\-. ]#i";
+	var $acceptedFolderChars = "";
+	var $acceptedFileChars = "";
 		
 	function wproFilesystemBase () {
 
@@ -50,9 +52,9 @@ class wproFilesystemBase extends wproCore {
 		$file = trim(str_replace($this->badFileChars, '', basename($file)));
 		if (!empty($this->acceptedFileChars)) $file = preg_replace($this->acceptedFileChars, '', $file);
 		// names cannot have multiple dots
-		$file = preg_replace("/(\.)\.+/si", "$1", $file);
+		$file = preg_replace("/\.+/si", ".", $file);
 		// names cannot have multiple spaces
-		$file = preg_replace("/(\s)\s+/si", "$1", $file);
+		$file = preg_replace("/\s+/si", " ", $file);
 		// names cannot start with a . or -
 		$file = preg_replace("/^(\.|-)+/si", '', $file);
 		
