@@ -23,7 +23,7 @@ if (WPRO_SESSION_ENGINE=='PHP'&&!isset($_SESSION)) {
 	
 	*/
 	
-	@include "../../admin/common.inc.php";
+	@include_once "../../../admin/common.inc.php";
 	//session_start();
 	
 	class wproFtpinterface {
