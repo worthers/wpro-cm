@@ -30,7 +30,7 @@ if (WPRO_SESSION_ENGINE=='PHP'&&!isset($_SESSION)) {
 		
 		function __construct () {
 			
-			global $a_configSite,$s_pathToRoot;
+			global $a_configSite;
 
 			// connect to FTP server and login
 			$this->r_connection = ftp_connect((strlen($a_configSite["ftp_host"]) ? $a_configSite["ftp_host"] : "localhost"));
@@ -40,7 +40,7 @@ if (WPRO_SESSION_ENGINE=='PHP'&&!isset($_SESSION)) {
 			ftp_chdir($this->r_connection,$a_configSite["ftp_path"]);
 
 			// build filesystem path to ftp_path
-			$this->s_ftpPath = $s_pathToRoot . "data/" . $a_configSite["upload_folder"] . "/";
+			$this->s_ftpPath = $a_configSite['files_path'];
 		}
 		
 		function __destruct () {
