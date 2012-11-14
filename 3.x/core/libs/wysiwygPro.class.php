@@ -658,7 +658,90 @@ class wysiwygPro extends wproCore {
 	
 		);
 	}
+
+	public function configurate ($table = NULL,$column_name = NULL) {
+			
+		global $settings_id,$a_configSite;
+		
+		// get settings
+		$a_settings = array(); // initialise
+		$r_result = dbQuery("SELECT * FROM _admin_settings_editor WHERE settings_id = '". $settings_id[$table][$column_name] ."'");
+		if (dbNumRows(dbQuery("SHOW TABLES LIKE '_admin_settings_editor'")) AND dbNumRows($r_result)) {
+			$a_settings = dbFetchAssoc($r_result);
+		}
+
+		$this->editorURL = $a_configSite["site_path"] . "/tools/editors/wysiwygpro/";
+		$this->imageDir = $a_configSite['files_path'] . "images/";
+		$this->imageURL = $a_configSite["site_path"] . $a_configSite['files_url'] . "images/";
+		$this->documentDir = $a_configSite['files_path'] . "downloads/";
+		$this->documentURL = $a_configSite["site_path"] . $a_configSite['files_url'] . "downloads/";
+		$this->mediaDir = $a_configSite['files_path'] . "media/";
+		$this->mediaURL = $a_configSite["site_path"] . $a_configSite['files_url'] . "media/";
+	//	$this->createFolders = true;
+	//	$this->deleteFiles = true;
+	//	$this->moveFiles = true;
+	//	$this->renameFiles = true;
+	//	$this->renameFolders = true;
+		$this->upload = true;
+
+		// set some defaults (can be overidden by field settings)
+		$this->disableFeatures(array("spelling","htmldepreciated","media","dirrtl","dirltr","print"));
+		$this->usep(true);
+		$this->usexhtml(true);
+		$this->thumbnails = false;
+		$this->width = '600';
+		$this->height = '400';
+
+		foreach ($a_settings as $current_key => $current_value) {
+
+			// ignore 'settings_id' and 'legend' fields
+			if (($current_key == "settings_id") OR ($current_key == "legend")) {
+				continue;
+
+			// serialize()'d array
+			} elseif (substr($current_key,0,2) == "a_" AND $current_value != "") {
+				$current_key = substr($current_key,2);
+				if (method_exists($this,$current_key)) {
+					$this->$current_key(unserialize($current_value));
+				} else {
+					$this->$current_key = unserialize($current_value);
+				}
+
+			// csv -> array
+			} elseif (substr($current_key,0,4) == "csv_" AND $current_value != "") {
+				$current_key = substr($current_key,4);
+				if (method_exists($this,$current_key)) {
+					$this->$current_key(explode(",",$current_value));
+				} else {
+					$this->$current_key = explode(",",$current_value);
+				}
+
+			// json object -> array
+			} elseif (substr($current_key,0,5) == "json_" AND $current_value != "") {
+				$current_key = substr($current_key,5);
+				if (method_exists($this,$current_key)) {
+					$this->$current_key(get_object_vars(json_decode($current_value)));
+				} else {
+					$this->$current_key = get_object_vars(json_decode($current_value));
+				}
+
+			// literal value
+			} elseif (substr($current_key,0,7) != "editor_" AND $current_value != "") {
+				if (method_exists($this,$current_key)) {
+					$this->$current_key($current_value);
+				} else {
+					$this->$current_key = $current_value;
+				}
+
+			// 'editor' prefix
+			} elseif (substr($current_key,0,7) == "editor_" AND $current_value != '0') {
+				$current_key = substr($current_key,7);
+				$this->$current_key = intval($current_value);
+			}
+		}
 	
+		return $this;
+	}
 	
 	/* plugin API */
 	var $plugins = array();
